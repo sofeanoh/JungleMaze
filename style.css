@@ -160,7 +160,7 @@ body {
     border: 2px solid rgb(238, 104, 8); /* Change to the color you want for the border */
 }
 
-.validEdge::after {
+.valid::after {
     content: '';
     position: absolute;
     top: 0;

@@ -236,7 +236,7 @@ export class Game {
             row.forEach((cell, colIndex) => {
                 if (this.canPlaceSpareTile(rowIndex, colIndex)) {
                     const cellElement = document.querySelector(`[data-row="${rowIndex}"][data-column="${colIndex}"]`);
-                    cellElement.classList.add('validEdge'); // Assuming 'highlight' is your CSS class for valid moves
+                    cellElement.classList.add('valid'); // Assuming 'highlight' is your CSS class for valid moves
                 }
             });
         });
@@ -286,7 +286,7 @@ export class Game {
         
                     // Add border effect
                     cellElement.classList.add('highlight');
-                    cellElement.classList.remove('validEdge');
+                    cellElement.classList.remove('valid');
                 }
             }
             // Example for left column hover
@@ -306,7 +306,7 @@ export class Game {
 
                     this.updateCellContentsForHover(cellElement, prevTile, simulateRemovedTile, col === 0);
                     cellElement.classList.add('highlight');
-                    cellElement.classList.remove('validEdge');
+                    cellElement.classList.remove('valid');
                 }
             }
 
@@ -328,7 +328,7 @@ export class Game {
 
                     this.updateCellContentsForHover(cellElement, prevTile, simulateRemovedTile, row === 0);
                     cellElement.classList.add('highlight');
-                    cellElement.classList.remove('validEdge');
+                    cellElement.classList.remove('valid');
                 }
             }
             // Example for bottom row hover
@@ -348,7 +348,7 @@ export class Game {
 
                     this.updateCellContentsForHover(cellElement, nextTile, simulateRemovedTile, row === this.board.grid.length - 1);
                     cellElement.classList.add('highlight');
-                    cellElement.classList.remove('validEdge')
+                    cellElement.classList.remove('valid')
                 }
             }
 
@@ -418,12 +418,12 @@ export class Game {
             this.updateCellContents(cell, originalTile);
         });
 
-         // After removing 'highlight', reapply 'validEdge' to valid edge cells
+         // After removing 'highlight', reapply 'valid' to valid edge cells
         this.board.grid.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 const cellElement = document.querySelector(`[data-row="${rowIndex}"][data-column="${colIndex}"]`);
                 if (this.canPlaceSpareTile(rowIndex, colIndex)) {
-                    cellElement.classList.add('validEdge'); // Reapply 'validEdge' class
+                    cellElement.classList.add('valid'); // Reapply 'valid' class
                 }
             });
         });
@@ -475,7 +475,7 @@ export class Game {
         cells.forEach(cell => {
             cell.classList.remove('highlight'); // Remove the border effect
             cell.classList.remove('invalid'); // Remove the border effect
-            cell.classList.remove('validEdge');
+            cell.classList.remove('valid');
 
         });
     }
@@ -580,7 +580,7 @@ export class Game {
             validMoves.forEach(move => {
                 const cellElement = document.querySelector(`.cell[data-row="${move.row}"][data-column="${move.col}"]`);
                 if (cellElement) {
-                    cellElement.classList.add('highlight'); // Use existing highlight style
+                    cellElement.classList.add('valid'); // Use existing highlight style
                 }
             });
         
