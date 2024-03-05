@@ -1,1 +1,1 @@
-# JungleMaze
+Restructuring the Jungle Maze's files.
