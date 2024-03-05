@@ -33,6 +33,7 @@ class App {
         this.game.renderBoard();
         this.game.attachEventListeners();
         this.game.renderDestinations();
+        this.game.simulateSpareTileClick();
     
         // For debugging purposes
         window.game = this.game; // Make the game accessible globally for debugging

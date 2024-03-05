@@ -160,8 +160,16 @@ body {
     border: 2px solid rgb(238, 104, 8); /* Change to the color you want for the border */
 }
 
-.validEdge {
-    border: 4px solid rgb(5, 176, 5); /* Change to the color you want for the border */
+.validEdge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(3, 117, 3, 0.428); /* Greenish tint, adjust opacity as needed */
+    mix-blend-mode: multiply; /* Blend the green tint with the background */
+    z-index: 1;
 }
 
 .invalid{

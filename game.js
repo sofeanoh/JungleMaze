@@ -77,11 +77,28 @@ export class Game {
             this.nextRound = false;
             // Update any UI elements or game state as needed
             this.updateUIAfterTurn();
+            // Simulate clicking on the spare tile of the new current player
+            this.simulateSpareTileClick();
     
             // Check if the current player is AI and if the game is not over
             if (this.currentPlayer === this.players[1] && this.players[1].name === 'AI' && !this.gameOver) {
                 this.executeAIMove();
             }
+        }
+    }
+
+        // Assuming this method is called right after switching turns
+    simulateSpareTileClick() {
+        const currentPlayerSpareTileElement = document.getElementById(`player${this.currentPlayer === this.players[0] ? '1' : '2'}-spare-tile`);
+        if (currentPlayerSpareTileElement) {
+            currentPlayerSpareTileElement.click(); // Simulate the click
+
+            // Introduce a slight delay before forcing highlights or refreshing UI
+            setTimeout(() => {
+                this.highlightValidSpareTilePlacements(); // Reapply or ensure highlights
+                // Optionally, force a UI refresh if there's a specific method that does it
+                // this.refreshUI(); // This is just an example. Adjust according to your actual UI refresh method.
+            }, 100); // Adjust delay as necessary
         }
     }
 
@@ -203,9 +220,9 @@ export class Game {
         // Update the border for the current player's spare tile
         const currentPlayerSpareTileElement = document.getElementById(`player${this.currentPlayer === this.players[0] ? '1' : '2'}-spare-tile`);
         if (this.spareTileClicked) {
+            this.highlightValidSpareTilePlacements();
             currentPlayerSpareTileElement.classList.add('spare-tile-selected');
-        // Highlight valid moves
-        this.highlightValidSpareTilePlacements();
+            // Highlight valid moves
         } else {
             currentPlayerSpareTileElement.classList.remove('spare-tile-selected');
             // Remove highlights if deselected
@@ -331,7 +348,7 @@ export class Game {
 
                     this.updateCellContentsForHover(cellElement, nextTile, simulateRemovedTile, row === this.board.grid.length - 1);
                     cellElement.classList.add('highlight');
-                    cellElement.classList.remove('validEdge');
+                    cellElement.classList.remove('validEdge')
                 }
             }
 
@@ -1111,9 +1128,27 @@ export class Game {
     
             } else{
                 this.pieceClickable = true;
+                setTimeout(() => {
+                    const pieceElement = this.findPlayerPieceElement(this.currentPlayer);
+                    if (pieceElement) {
+                        pieceElement.click();
+                    }
+                }, 500); // Delay of 500 milliseconds
             }
                 // this.makePieceClickablex();
             }
+        }
+
+        findPlayerPieceElement(player) {
+            // Assuming each player's piece has a unique color or identifier that can be used to find it
+            const pieceColor = player.colour; // Adjust based on your game's logic
+            const pieces = document.querySelectorAll('.piece');
+            for (const piece of pieces) {
+                if (piece.style.backgroundColor === pieceColor) {
+                    return piece; // Found the player's piece element
+                }
+            }
+            return null; // No piece found for the player
         }
         
 }
