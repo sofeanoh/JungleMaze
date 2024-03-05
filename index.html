@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jungle Maze</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="settings-container">
+        <label for="selectOpponent">Select Opponent:</label>
+        <select id="selectOpponent">
+            <option value="playerVsPlayer">Player vs Player</option>
+            <option value="playerVsAI" selected>Player vs AI</option>
+        </select>
+        
+        <div id="playerNameInput">
+            <label for="playerName">Your Name:</label>
+            <input type="text" id="playerName" placeholder="Enter your name" value="sofea">
+        </div>
+    
+        <div id="aiTypeContainer" style="display: block;">
+            <label for="aiType">AI Type:</label>
+            <select id="aiType">
+                <option value="minimax" selected>Minimax</option>
+                <option value="mcts">MCTS</option>
+            </select>
+        </div>
+    
+        <div id="aiDepthContainer" style="display: block;">
+            <label for="aiDepth">Depth:</label>
+            <select id="aiDepth">
+                <option value="1" selected>Depth 1</option>
+                <option value="2">Depth 2</option>
+                <option value="3">Depth 3</option>
+            </select>
+        </div>
+    
+        <button id="startGame">Start Game</button>
+    </div>
+    
+    <div id="game-container">
+        <img src="header.png" alt="Jungle Maze Header" id="game-header">
+        <div id="game-content">
+            <div id="player1-container" class="player-container">
+                <div id="player1-destinations" class="destinations-container"></div>
+                <div id="player1-spare-tile" class="spare-tile"></div>
+            </div>
+            <div id="game-board" class="game-board">
+                <div class="cell" data-row="0" data-column="0" id="Cell1"></div>
+                    <div class="cell" data-row="0" data-column="1" id="Cell2"></div>
+                    <div class="cell" data-row="0" data-column="2" id="Cell3"></div>
+                    <div class="cell" data-row="0" data-column="3" id="Cell4"></div>
+                    <div class="cell" data-row="0" data-column="4" id="Cell5"></div>
+                    <div class="cell" data-row="0" data-column="5" id="Cell6"></div>
+                    <div class="cell" data-row="0" data-column="6" id="Cell7"></div>
+        
+                    <div class="cell" data-row="1" data-column="0" id="Cell8"></div>
+                    <div class="cell" data-row="1" data-column="1" id="Cell9"></div>
+                    <div class="cell" data-row="1" data-column="2" id="Cell10"></div>
+                    <div class="cell" data-row="1" data-column="3" id="Cell11"></div>
+                    <div class="cell" data-row="1" data-column="4" id="Cell12"></div>
+                    <div class="cell" data-row="1" data-column="5" id="Cell13"></div>
+                    <div class="cell" data-row="1" data-column="6" id="Cell14"></div>
+
+                    <div class="cell" data-row="2" data-column="0" id="Cell15"></div>
+                    <div class="cell" data-row="2" data-column="1" id="Cell16"></div>
+                    <div class="cell" data-row="2" data-column="2" id="Cell17"></div>
+                    <div class="cell" data-row="2" data-column="3" id="Cell18"></div>
+                    <div class="cell" data-row="2" data-column="4" id="Cell19"></div>
+                    <div class="cell" data-row="2" data-column="5" id="Cell20"></div>
+                    <div class="cell" data-row="2" data-column="6" id="Cell21"></div>
+
+                    <div class="cell" data-row="3" data-column="0" id="Cell22"></div>
+                    <div class="cell" data-row="3" data-column="1" id="Cell23"></div>
+                    <div class="cell" data-row="3" data-column="2" id="Cell24"></div>
+                    <div class="cell" data-row="3" data-column="3" id="Cell25"></div>
+                    <div class="cell" data-row="3" data-column="4" id="Cell26"></div>
+                    <div class="cell" data-row="3" data-column="5" id="Cell27"></div>
+                    <div class="cell" data-row="3" data-column="6" id="Cell28"></div>
+
+                    <div class="cell" data-row="4" data-column="0" id="Cell29"></div>
+                    <div class="cell" data-row="4" data-column="1" id="Cell30"></div>
+                    <div class="cell" data-row="4" data-column="2" id="Cell31"></div>
+                    <div class="cell" data-row="4" data-column="3" id="Cell32"></div>
+                    <div class="cell" data-row="4" data-column="4" id="Cell33"></div>
+                    <div class="cell" data-row="4" data-column="5" id="Cell34"></div>
+                    <div class="cell" data-row="4" data-column="6" id="Cell35"></div>
+
+                    <div class="cell" data-row="5" data-column="0" id="Cell36"></div>
+                    <div class="cell" data-row="5" data-column="1" id="Cell37"></div>
+                    <div class="cell" data-row="5" data-column="2" id="Cell38"></div>
+                    <div class="cell" data-row="5" data-column="3" id="Cell39"></div>
+                    <div class="cell" data-row="5" data-column="4" id="Cell40"></div>
+                    <div class="cell" data-row="5" data-column="5" id="Cell41"></div>
+                    <div class="cell" data-row="5" data-column="6" id="Cell42"></div>
+
+                    <div class="cell" data-row="6" data-column="0" id="Cell43"></div>
+                    <div class="cell" data-row="6" data-column="1" id="Cell44"></div>
+                    <div class="cell" data-row="6" data-column="2" id="Cell45"></div>
+                    <div class="cell" data-row="6" data-column="3" id="Cell46"></div>
+                    <div class="cell" data-row="6" data-column="4" id="Cell47"></div>
+                    <div class="cell" data-row="6" data-column="5" id="Cell48"></div>
+                    <div class="cell" data-row="6" data-column="6" id="Cell49"></div>
+            </div>
+            <!-- Example of player destination container in HTML structure -->
+            <div id="player2-container" class="player-container">
+                <div id="player2-destinations" class="destinations-container"></div>
+                <div id="player2-spare-tile" class="spare-tile"></div>
+            </div>
+        </div>
+        <div id="game-info">
+            <p id="current-player">Current player: </p>
+            <p id="current-piece-position">Current piece position: </p>
+            <p id="current-destination">Head to: </p> <!-- New paragraph for current destination -->
+        </div>
+        
+        
+    </div>
+    <!-- <script type="module" src="tile.js"></script>
+    <script type="module" src="player.js"></script>
+    <script type="module" src="destination.js"></script>
+    <script type="module" src="piece.js"></script>
+    <script type="module" src="board.js"></script> -->
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

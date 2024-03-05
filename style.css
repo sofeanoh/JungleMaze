@@ -1,0 +1,174 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('bg.png');
+    flex-direction: row; /* Add this line to layout the children of body in a row */
+}
+
+#game-header {
+    width: 100%; /* Adjust the width as needed */
+    max-width: 700px; /* Assuming you want it to match the game board's width */
+    margin-bottom: 10px; /* Add some space between the header and the game board */
+}
+
+#settings-container {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+
+#game-container {
+    display: flex;
+    flex-direction: column; /* Aligns children (header, game-content, game-info) vertically */
+    align-items: center; /* Centers them horizontally */
+    justify-content: center; /* Optional: Adjust vertical alignment if necessary */
+}
+
+#game-content {
+    display: flex; /* Makes direct children (player1-container, game-board, player2-container) align horizontally */
+    justify-content: center; /* Centers the children */
+    align-items: start; /* Aligns items at the start of the cross axis */
+}
+
+
+.game-board, .destinations-container, #player1-spare-tile, #player2-spare-tile {
+    flex-shrink: 0; /* Prevents the items from shrinking */
+    flex-grow: 0;   /* Prevents the items from growing */
+}
+
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 1px;
+    width: 700px;
+    height: 700px;
+}
+
+.player-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px; /* Adjust the spacing around each player's container */
+}
+
+.destinations-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 20px; /* Space between the destinations and the spare tile */
+    width: 100px;
+    padding: 5px;
+    background-color: rgb(215, 221, 208);
+}
+.destinationDiv {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-size: cover;
+    margin-bottom: 10px;
+    overflow: hidden; /* Ensure the ::after content doesn't overflow */
+}
+
+.destinationDiv::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #4c2f1f; /* The covering effect */
+    opacity: 0; /* Start as transparent to show the destination */
+    z-index: 1;
+
+}
+
+/* Initially, all destinations are considered covered */
+.destinationDiv.covered::after {
+    opacity: 1; /* Make the overlay opaque to hide the destination */
+}
+
+/* When a destination is revealed, make the overlay transparent */
+.destinationDiv.revealed::after {
+    transition: opacity 0.5s ease; /* Smooth transition for opacity change */
+    opacity: 0; /* Set to fully transparent to reveal the destination */
+
+}
+
+
+#player1-spare-tile, #player2-spare-tile {
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+}
+
+.spare-tile-selected {
+    border: 3px solid #ff0000; /* Example: red border */
+    box-sizing: border-box; /* To keep the overall size including the border */
+}
+
+
+
+.cell {
+    background-size: cover;
+    position: relative;
+}
+
+.piece {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    margin-left: -25px;
+    border: 2px solid black;
+    border-radius: 50%;
+}
+
+.piece.player1 {
+    background-color: red;
+}
+
+.piece.player2 {
+    background-color: blue;
+}
+
+.destination {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    margin-left: -25px;
+    background-size: cover;
+}
+
+.highlight {
+    border: 2px solid rgb(238, 104, 8); /* Change to the color you want for the border */
+}
+
+.invalid{
+    border: 2px solid rgb(161, 6, 6);
+}
+
+#game-info {
+    position: absolute; /* Position it relative to the nearest positioned ancestor or to the initial containing block (usually the viewport) */
+    bottom: 0; /* Align to the bottom */
+    left: 0; /* Align to the left */
+    padding: 20px; /* Add some space inside the borders */
+    color: white; /* Adjust based on your background for visibility */
+    background-color: rgba(0, 0, 0, 0.5); /* Optional: Add a semi-transparent background for better readability */
+}
