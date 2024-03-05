@@ -126,20 +126,30 @@ export class Game {
         });
 
         gameBoardElement.addEventListener('click', (event) => {
-            let target = event.target; // The initial click target
-        
-            // Check if the click is directly on a piece
-            if (this.pieceClickable && target.classList.contains('piece')) {
-                this.handlePieceClick(target);
-            } else if (this.pieceClickable && target.classList.contains('cell')) {
-                // If the click is on a cell, check if there's a piece inside it
-                const piece = target.querySelector('.piece');
-                if (piece && piece.style.backgroundColor === this.currentPlayer.colour) {
+            let target = event.target;
+            let targetCell;
+    
+            // Check if the click is directly on a piece or destination, or anywhere within the cell
+            if (target.classList.contains('piece') || target.classList.contains('destination')) {
+                targetCell = target.parentElement; // The cell is the parent of the piece/destination
+            } else if (target.classList.contains('cell')) {
+                targetCell = target; // Clicked directly on the cell
+            }
+    
+            if (!targetCell) return; // If we didn't click on something we care about, exit
+    
+            // First, try to handle the piece click logic if applicable
+            if (this.pieceClickable) {
+                const piece = targetCell.querySelector('.piece');
+                if (piece) {
                     this.handlePieceClick(piece);
-                }  else if (target.classList.contains('cell') && this.pieceClickable && this.selectedPiece) {
-                    // If a cell is clicked and a piece is selected, attempt to move the piece
-                    this.handleCellClickForPiece(event);
+                    return; // Prevent further logic from executing in this click event
                 }
+            }
+    
+            // Then, handle cell click logic for moving a piece if applicable
+            if (this.pieceClickable && this.selectedPiece) {
+                this.handleCellClickForPiece({ target: targetCell });
             }
         });
         
