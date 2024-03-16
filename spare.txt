@@ -1,0 +1,356 @@
+shuffleArray(randomDest);
+
+
+        startPatterns.forEach((startPattern, i) => {
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            // Check if startPattern is an empty string
+            if (startPattern === '') {
+                // Randomly select a pattern from possiblePatterns
+                const randomIndex = Math.floor(Math.random() * possiblePatterns.length);
+                startPattern = possiblePatterns[randomIndex];
+            }
+            tile.innerHTML = startPattern;
+            tile.setAttribute('tile-id', i);
+
+            if (i == 6) {
+                const pieceDiv = document.createElement('div')
+                pieceDiv.classList.add('piece')
+                pieceDiv.innerHTML = pieceMarkup
+                pieceDiv.id = '2'; // Assign ID 2 to the piece at index 6
+                tile.firstChild.append(pieceDiv)
+                pieceDiv.classList.add('blue')
+                pieceDiv.setAttribute('draggable', true)
+
+
+            } else if (i == 42) {
+                const pieceDiv = document.createElement('div');
+                pieceDiv.classList.add('piece');
+                pieceDiv.innerHTML = pieceMarkup;
+                pieceDiv.id = '1'; // Assign ID 1 to the piece at index 42
+                tile.firstChild.append(pieceDiv);
+                pieceDiv.classList.add('red')
+                pieceDiv.setAttribute('draggable', true)
+            
+            } else if (i == 0){ // for destinations
+                const destDiv = document.createElement('div')
+                destDiv.classList.add('destination');
+                destDiv.innerHTML = sun; //fix sun at (0,0)
+                tile.firstChild.append(destDiv);
+
+            } else if (i == 48){
+                const destDiv = document.createElement('div')
+                destDiv.classList.add('destination');
+                destDiv.innerHTML = galaxy; //fix sun at (0,0)
+                tile.firstChild.append(destDiv);
+            } // Adjusted logic for setting destinations
+            if (i == 10 || i == 38) {
+                const destDiv = document.createElement('div');
+                destDiv.classList.add('destination');
+                // Use the next element from the shuffled randomDest array
+                // For i == 10, use the first element; for i == 38, use the second
+                const destContent = randomDest[i == 10 ? 0 : 1];
+                destDiv.innerHTML = destContent;
+                tile.firstChild.append(destDiv);
+            }
+
+            gameBoard.append(tile);
+            this.board = document.querySelectorAll('#game-board .tile')
+            this.spareTile = document.querySelectorAll('.spare-tile');
+
+
+        });
+
+        function shuffleArray(array) { //helper function 
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+        }
+        // for spare tile set up
+        const randomIndex = Math.floor(Math.random() * possiblePatterns.length);
+        const spareTile = document.createElement('div')
+        spareTile.classList.add('tile')
+        spareTile.innerHTML = possiblePatterns[randomIndex]
+        spareTilePlayer1.append(spareTile)
+    }
+
+    legalMoveForSpareTile(){
+
+    }
+
+    placeSpareTile(spareTile, row, col){
+     // Calculate index in the linear array representation
+    const index = row * this.gridSize + col;
+    
+    // Assuming this.board is a collection of tile elements
+    const targetTile = this.board[index];
+
+    if (targetTile && spareTile) {
+        // Assuming the pattern class is on the spareTile itself (or its firstChild if it's a container)
+        // And assuming the targetTile's pattern is determined by its firstChild's class
+        const patternClasses = spareTile.firstChild.firstChild.classList.value; // Get class list of spareTile
+
+        // Update target tile's first child with these classes
+        // Clear existing pattern classes if necessary
+        const targetPatternDiv = targetTile.firstChild;
+        console.log(targetPatternDiv)
+        if (targetPatternDiv) {
+            // Optional: Clear existing classes if they interfere with new ones
+            // targetPatternDiv.className = '';
+
+            // Add new pattern classes
+            // This assumes you want to keep existing classes and just add or update pattern-related ones.
+            // If you need to replace them entirely, you might set className directly or adjust logic accordingly.
+            targetPatternDiv.classList.value = patternClasses;
+
+            // If you're specifically interested in transferring only certain classes (like 'L_down_right', etc.)
+            // You may need additional logic to filter and transfer only those classes.
+        }
+    }
+}
+        
+
+    }
+
+
+
+    html, body {
+    height: 100%; /* Make sure the html and body are full height */
+    margin: 0; /* Remove default margin */
+    display: flex; /* Use flexbox to align children */
+    justify-content: center; /* Center children horizontally */
+    align-items: center; /* Center children vertically */
+    background-image: url('bg.png');
+}
+
+#game-board {
+   
+    width: 700px;
+    height: 700px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tile {
+    width: 100px;
+    height: 100px;
+    position: relative;
+}
+
+.tile img {
+    width: 100px;
+    height: 100px;
+    border: solid 1px rgb(131, 112, 112);
+}
+
+.piece{
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    z-index: 10;
+    margin-top: -85%;
+    margin-left: 25%;
+}
+
+.piece svg{
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    z-index: 10;
+
+}
+
+.destination{
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    z-index: 10;
+    margin-top: -85%;
+    margin-left: 25%;
+}
+
+.destination img{
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    z-index: 10;
+    border: none;
+
+
+}
+
+.red {
+    fill: rgb(201, 57, 57);
+    stroke-width: 10; 
+    stroke:rgb(255, 255, 255);
+}
+.blue {
+    fill: rgb(25, 84, 163);
+    stroke-width: 10; 
+    stroke:rgb(255, 255, 255);
+}
+
+.spare-tile{
+    margin-top: 50%;
+}
+
+#player1-spare-tile{
+    margin-right: 10px;
+}
+
+#player2-spare-tile{
+    margin-left: 10px;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jungle Maze</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <!-- <div id="settings-container">
+        <label for="selectOpponent">Select Opponent:</label>
+        <select id="selectOpponent">
+            <option value="playerVsPlayer">Player vs Player</option>
+            <option value="playerVsAI" selected>Player vs AI</option>
+        </select>
+        
+        <div id="playerNameInput">
+            <label for="playerName">Your Name:</label>
+            <input type="text" id="playerName" placeholder="Enter your name" value="sofea">
+        </div>
+    
+        <div id="aiTypeContainer" style="display: block;">
+            <label for="aiType">AI Type:</label>
+            <select id="aiType">
+                <option value="minimax" selected>Minimax</option>
+                <option value="mcts">MCTS</option>
+            </select>
+        </div>
+    
+        <div id="aiDepthContainer" style="display: block;">
+            <label for="aiDepth">Depth:</label>
+            <select id="aiDepth">
+                <option value="1">Depth 1</option>
+                <option value="2" selected>Depth 2</option>
+                <option value="3">Depth 3</option>
+            </select>
+        </div>
+    
+        <button id="startGame">Start Game</button>
+    </div>
+    
+    <div id="game-container">
+        <img src="header.png" alt="Jungle Maze Header" id="game-header">
+        <div id="game-content">
+-->         
+            <div id="player1-spare-tile" class="spare-tile"></div> 
+            <div id="game-board" class="game-board"></div>
+            <div id="player2-spare-tile" class="spare-tile"></div> 
+
+            <!-- Example of player destination container in HTML structure
+            <div id="player2-container" class="player-container">
+                <div id="player2-destinations" class="destinations-container"></div>
+                <div id="player2-spare-tile" class="spare-tile"></div>
+            </div>
+        </div>
+        <div id="game-info">
+            <p id="current-player">Current player: </p>
+            <p id="current-piece-position">Current piece position: </p>
+            <p id="current-destination">Head to: </p>  New paragraph for current destination -->
+        <!-- </div>
+        
+        
+    </div> --> 
+    <!-- <script src="tile.js"></script>
+    <script src="player.js"></script> -->
+    <script src="board.js"></script>
+    <!-- <script src="app.js"></script> -->
+
+
+</body>
+
+</html>
+class App {
+    constructor() {
+        this.gameBoard = new Board(); // Create a new instance of Board
+    }
+
+    initialiseGame() {
+        this.gameBoard.createBoard(); // Call createBoard to set up the game board
+        // Any additional game initialization logic can go here
+    }
+}
+
+window.onload = () => {
+    window.app = new App(); // Attaching 'app' to 'window' makes it globally accessible
+    window.app.initialiseGame();
+};
+
+
+const T_up = '<div class="T-up" id="T-up"><img src="T-up.png" /></div>';
+const T_down = '<div class="T-down" id="T-down"><img src="T-down.png" /></div>';
+const T_right = '<div class="T-right" id="T-right"><img src="T-right.png" /></div>';
+const T_left = '<div class="T-left" id="T-left"><img src="T-left.png" /></div>';
+const L_up_right = '<div class="L-up-right" id="L-up-right"><img src="L-up-right.png" /></div>';
+const L_up_left = '<div class="L-up-left" id="L-up-left"><img src="L-up-left.png" /></div>';
+const L_down_right = '<div class="L-down-right" id="L-down-right"><img src="L-down-right.png" /></div>';
+const L_down_left = '<div class="L-down-left" id="L-down-left"><img src="L-down-left.png" /></div>';
+const horizontal = '<div class="horizontal" id="horizontal"><img src="horizontal.png" /></div>';
+const vertical = '<div class="vertical" id="vertical"><img src="vertical.png" /></div>';
+
+// for piece
+
+const pieceMarkup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"/></svg>'
+
+// for destinations
+
+const sun = '<div class="sun" id="sun"><img src="sun.png" /></div>';
+const moon = '<div class="moon" id="moon"><img src="moon.png" /></div>';
+const galaxy = '<div class="galaxy" id="galaxy"><img src="galaxy.png" /></div>';
+const mountain = '<div class="mountain" id="mountain"><img src="mountain.png" /></div>';
+
+class Board {
+    constructor() {
+        this.board = new Array(49).fill(''); // Initialize the board with empty strings
+        this.spareTile = null;
+        this.currentPlayer = null;
+        this.destinations = null;
+    }
+
+    createBoard() {
+        const startPatterns = [
+            ['L-down-right', '', 'T-down', '', 'T-down', '', 'L-down-left'],
+            ['', '', '', '', '', '', ''],
+            ['T-right', '', '', '', '', '', 'T-left'],
+            ['', '', '', '', '', '', ''],
+            ['T-right', '', '', '', '', '', 'T-left'],
+            ['', '', '', '', '', '', ''],
+            ['L-up-right', '', 'T-up', '', 'T-up', '', 'L-up-left']
+        ];
+
+        const possiblePatterns = ['L-down-right', 'L-down-left', 'T-down', 'T-right', 'T-left', 'L-up-right', 'T-up', 'L-up-left'];
+
+        // Iterate over each row
+        startPatterns.forEach((row, rowIndex) => {
+            // Iterate over each tile in the row
+            row.forEach((tile, colIndex) => {
+                if (tile === '') {
+                    // Randomly select a pattern from possiblePatterns
+                    const randomIndex = Math.floor(Math.random() * possiblePatterns.length);
+                    startPatterns[rowIndex][colIndex] = possiblePatterns[randomIndex];
+                }
+            });
+        });
+
+        this.board = startPatterns; 
+    }
+}
+
+window.onload = () => {
+    window.board = new Board(); // Attaching 'app' to 'window' makes it globally accessible
+    window.board.createBoard();
+};
+

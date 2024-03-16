@@ -9,7 +9,9 @@
         <label for="selectOpponent">Select Opponent:</label>
         <select id="selectOpponent">
             <option value="playerVsPlayer">Player vs Player</option>
-            <option value="playerVsAI" selected>Player vs AI</option>
+            <option value="playerVsAI" >Player vs AI</option>
+            <option value="aiVsAI"selected>AI vs AI</option>
+
         </select>
         
         <div id="playerNameInput">
@@ -17,22 +19,61 @@
             <input type="text" id="playerName" placeholder="Enter your name" value="sofea">
         </div>
     
-        <div id="aiTypeContainer" style="display: block;">
-            <label for="aiType">AI Type:</label>
-            <select id="aiType">
+        <div id="aiTypeContainer1" style="display: block;">
+            <p><b>PLAYER AI 1 SETTINGS:</b></p>
+            <label for="aiType1">AI Type:</label>
+            <select id="aiType1">
                 <option value="minimax" selected>Minimax</option>
                 <option value="mcts">MCTS</option>
             </select>
         </div>
+        <div id="minimaxContainer1" style="display: block;">
+            <label for="minimaxType1">Minimax Type:</label>
+            <select id="minimaxType1">
+                <option value="simpleMinimax" >Simple Minimax</option>
+                <option value="minimaxAB">Minimax AB Pruning</option>
+                <option value="minimaxTrans">Minimax AB with <br> transposition table</option>
+                <option value="minimaxTransID"selected>Minimax AB + <br> transposition table + <br> Iterative deepening</option>
+            </select>
+        </div>
     
-        <div id="aiDepthContainer" style="display: block;">
-            <label for="aiDepth">Depth:</label>
-            <select id="aiDepth">
+        <div id="aiDepthContainer1" style="display: block;">
+            <label for="aiDepth1">Depth:</label>
+            <select id="aiDepth1">
                 <option value="1" selected>Depth 1</option>
                 <option value="2">Depth 2</option>
                 <option value="3">Depth 3</option>
             </select>
         </div>
+
+        <div id="aiTypeContainer2" style="display: block;">
+            <p><b>PLAYER AI 2 SETTINGS:</b></p>
+            <label for="aiType2">AI Type:</label>
+            <select id="aiType2">
+                <option value="minimax" selected>Minimax</option>
+                <option value="mcts">MCTS</option>
+            </select>
+        </div>
+
+        <div id="minimaxContainer2" style="display: block;">
+            <label for="minimaxType2">Minimax Type:</label>
+            <select id="minimaxType2">
+                <option value="simpleMinimax" selected>Simple Minimax</option>
+                <option value="minimaxAB">Minimax AB Pruning</option>
+                <option value="minimaxTrans">Minimax AB with <br> transposition table</option>
+                <option value="minimaxTransID">Minimax AB + <br> transposition table + <br> Iterative deepening</option>
+            </select>
+        </div>
+
+        <div id="aiDepthContainer2" style="display: block;">
+            <label for="aiDepth2">Depth:</label>
+            <select id="aiDepth2">
+                <option value="1" selected>Depth 1</option>
+                <option value="2">Depth 2</option>
+                <option value="3">Depth 3</option>
+            </select>
+        </div>
+    
     
         <button id="startGame">Start Game</button>
     </div>

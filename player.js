@@ -10,8 +10,17 @@ export class Player {
         this.destinations = null; // Generate and store the random destinations
         this.initialRow = row; // Store initial position
         this.initialCol = col;
+        this.posBefore = {row: row, col: col}
         this.currentDestinationIndex = 0;
+        this.originalDestIndex = null;
+        this.originalDest = null;
+        this.tempDestIndex = null;
+        this.updateDestIndex = false;
 
+    }
+
+    getInitialPos(){
+        return {row: this.initialRow, col: this.initialCol}
     }
 
     // Method to update the piece's position

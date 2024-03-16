@@ -5,13 +5,21 @@ body {
     height: 100vh;
     margin: 0;
     background-image: url('bg.png');
-    flex-direction: row; /* Add this line to layout the children of body in a row */
+    flex-direction: row; 
 }
 
 #game-header {
-    width: 100%; /* Adjust the width as needed */
-    max-width: 700px; /* Assuming you want it to match the game board's width */
-    margin-bottom: 10px; /* Add some space between the header and the game board */
+    width: 100%; 
+    max-width: 700px; 
+    margin-bottom: 10px; 
+}
+
+#settings-container select {
+    width: calc(100% - 20px); 
+    font-size: 0.9em; 
+    padding: 8px; /* Add some padding for better visual appearance */
+    margin-bottom: 8px; /* Add some space between select elements */
+    box-sizing: border-box; 
 }
 
 #settings-container {
@@ -22,7 +30,11 @@ body {
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    width: 250px;
+    /* Additional styles if needed */
 }
+
+
 
 
 #game-container {

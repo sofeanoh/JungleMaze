@@ -33,6 +33,9 @@ export class Game {
         } else {
             this.aiPlayer = null;
         }
+        this.gameState = this.logCurrentState(); // Log initial state
+        ;
+
         
     }
 
@@ -71,18 +74,24 @@ export class Game {
 
     switchTurn() {
         if (this.nextRound) {
+
             // Switch the current player
             this.currentPlayer = this.getOtherPlayer();
+            
             // Reset the nextRound flag
             this.nextRound = false;
+            this.gameState = this.logCurrentStateForPiecePlacement(); // Log initial state
+          
             // Update any UI elements or game state as needed
             this.updateUIAfterTurn();
             // Simulate clicking on the spare tile of the new current player
             this.simulateSpareTileClick();
     
-            // Check if the current player is AI and if the game is not over
-            if (this.currentPlayer === this.players[1] && this.players[1].name === 'AI' && !this.gameOver) {
-                this.executeAIMove();
+            // Automatically execute AI move if the new current player is AI
+            if (this.currentPlayer instanceof AIPlayer && !this.gameOver) {
+                setTimeout(() => {
+                    this.executeAIMove();
+                }, 500); // Delay AI move execution to simulate thinking and avoid call stack issues
             }
         }
     }
@@ -96,8 +105,7 @@ export class Game {
             // Introduce a slight delay before forcing highlights or refreshing UI
             setTimeout(() => {
                 this.highlightValidSpareTilePlacements(); // Reapply or ensure highlights
-                // Optionally, force a UI refresh if there's a specific method that does it
-                // this.refreshUI(); // This is just an example. Adjust according to your actual UI refresh method.
+                
             }, 100); // Adjust delay as necessary
         }
     }
@@ -124,7 +132,7 @@ export class Game {
         const gameBoardElement = document.getElementById('game-board');
     
         gameBoardElement.addEventListener('mouseover', (event) => {
-            if (event.target.classList.contains('cell')) { // Ensure we're hovering over a cell
+            if (event.target.classList.contains('cell')) { // Ensure 're hovering over a cell
                 this.highlightRowCol(event);
             }
         });
@@ -153,7 +161,7 @@ export class Game {
                 targetCell = target; // Clicked directly on the cell
             }
     
-            if (!targetCell) return; // If we didn't click on something we care about, exit
+            if (!targetCell) return; // If  didn't click on something  care about, exit
     
             // First, try to handle the piece click logic if applicable
             if (this.pieceClickable) {
@@ -226,17 +234,17 @@ export class Game {
         } else {
             currentPlayerSpareTileElement.classList.remove('spare-tile-selected');
             // Remove highlights if deselected
-            this.removeHighlights();
+            // this.removeHighlights();
         }
     }
 
     highlightValidSpareTilePlacements() {
-        // Example logic, adjust according to your game's rules
+        // Example logic, adjust according to  game's rules
         this.board.grid.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 if (this.canPlaceSpareTile(rowIndex, colIndex)) {
                     const cellElement = document.querySelector(`[data-row="${rowIndex}"][data-column="${colIndex}"]`);
-                    cellElement.classList.add('valid'); // Assuming 'highlight' is your CSS class for valid moves
+                    cellElement.classList.add('valid'); // Assuming 'highlight' is  CSS class for valid moves
                 }
             });
         });
@@ -467,8 +475,14 @@ export class Game {
             this.placeSpareTile(i, j); // Call existing logic to place the tile and update the board state
              // Manually remove the highlighting from all cells
              this.clearAllHighlights();
+             if(this.findValidMovesFromCurrentPiecePosition().length == 0){
+                setTimeout(() => {
+                this.switchTurn()
+                }, 200)
+            }
+        }
     }
-}
+
 
     clearAllHighlights() {
         const cells = document.querySelectorAll('.cell');
@@ -524,23 +538,29 @@ export class Game {
     }
     
 
-    handlePieceClick(pieceElement) {
+    handlePieceClick(input) {
+        // Determine if input is a DOM event or directly a DOM element
+        const pieceElement = input.target ? input.target : input;
+    
+        // Assuming pieceElement is always a valid DOM element at this point
         this.selectedPiece = pieceElement; // Store the clicked piece for reference
     
-        // Extract the row and column from the piece's parent cell
+        // Find the closest cell ancestor of the pieceElement
         const cell = pieceElement.closest('.cell');
         const selectedPieceRow = parseInt(cell.getAttribute('data-row'), 10);
         const selectedPieceCol = parseInt(cell.getAttribute('data-column'), 10);
     
         // Highlight valid moves for the selected piece
         this.highlightValidMoves(selectedPieceRow, selectedPieceCol);
+
     }
+    
     
     handleCellClickForPiece(event) {
         if (!this.selectedPiece) return; // Exit if no piece is selected
     
     
-        const targetCell = event.target.closest('.cell'); // Ensure we're targeting the cell
+        const targetCell = event.target.closest('.cell'); // Ensure 're targeting the cell
         if (!targetCell) return; // Exit if not a cell
     
         const targetRow = parseInt(targetCell.getAttribute('data-row'), 10);
@@ -558,6 +578,9 @@ export class Game {
             this.selectedPiece = null; // Deselect the piece
             this.clearAllHighlights(); // Clear all highlights
             this.updateUIflag = false;
+            setTimeout(() => {
+                this.switchTurn()
+                }, 200)
         }
     }
     
@@ -704,37 +727,43 @@ export class Game {
        
         executeAIMove() {
             // Assuming aiPlayer has been properly initialized and linked to the game
-            let bestMove = this.aiPlayer.findBestMove(this);
-            if (bestMove) {
-                // Temporarily set the flags as if the AI is a player making the moves
-                this.updateUIflag = true; // To enable UI updates
-                this.spareTileClicked = true; // Simulate that the spare tile was clicked for placement
+            let bestMove = this.aiPlayer.getBestMove(this.gameState);
+            console.log(bestMove)
+            if (bestMove && bestMove.move.spareTilePlacement) {
+                // Simulate placing the spare tile with immediate execution
+                const targetSpareTileCell = document.querySelector(`.cell[data-row="${bestMove.move.spareTilePlacement.row}"][data-column="${bestMove.move.spareTilePlacement.col}"]`);
+                if (targetSpareTileCell) {
+                    this.handleEdgeTileClick({ target: targetSpareTileCell });
+                }
         
-                // Simulate placing the spare tile
-                this.placeSpareTile(bestMove.spareTilePlacement.row, bestMove.spareTilePlacement.col);
-                this.clearAllHighlights();
-        
-                // Reset the spareTileClicked flag after placing the tile
-                this.spareTileClicked = false;
-    
-                this.selectedPiece = this.getPlayerPiece();
-                this.updateUIflag = true; // To enable UI updates
+                if (bestMove.move.pieceMove != null) {
+                    // Delay added to ensure the UI updates after the spare tile placement before proceeding with the piece move
+                    setTimeout(() => {
+                        // Ensure pieceElement is correctly retrieved
+                        const pieceElement = this.findPlayerPieceElement(this.currentPlayer);
+                        if (pieceElement && pieceElement.closest) { // Check if pieceElement exists and has .closest method
+                            this.handlePieceClick(pieceElement); 
+                            setTimeout(() => {
+                                // Simulate the move by clicking on the target cell for the piece
+                                const targetPieceCell = document.querySelector(`.cell[data-row="${bestMove.move.pieceMove.row}"][data-column="${bestMove.move.pieceMove.col}"]`);
+                                if (targetPieceCell) {
+                                    this.handleCellClickForPiece({ target: targetPieceCell });
+                                }
+                            }, 200); // Short delay to simulate clicking the target cell
+                        }
+                    }, 200);
+                    this.nextRound = true; // Ensure next round starts if no piece move
 
-        
-                // Simulate moving the piece
-                // Assuming the pieceMove part of bestMove contains the target row and col for the piece's new position
-                this.placePiece(bestMove.pieceMove.row, bestMove.pieceMove.col);
-        
-                // Update the UI to reflect the AI's move
-                this.updateUI();
-                this.updateGameInfo();
-                this.pieceClickable = false; // Disable piece clicking after moving
-                this.selectedPiece = null; // Deselect the piece
-                this.clearAllHighlights(); // Clear all highlights
-                this.updateUIflag = false;
-                console.log(this.aiPlayer.hasReturnedToInitialPosition())
+                } else {
+                    console.log("Spare tile placed, no piece move this turn.");
+                    this.nextRound = true; // Ensure next round starts if no piece move
+                }
+            } else{
+                console.log ("no best move for execution")
             }
         }
+        
+        
         ///////////////////////////////////////////////////////////////////
         //////                                                  ///////////
         //////                                                  ///////////
@@ -842,7 +871,7 @@ export class Game {
     }
 
         // Update the board to add the piece to its new position
-        this.board.grid[row][col].piece = new Piece(this.currentPlayer, row, col); // Assume Piece constructor takes a player, row, and col
+        this.board.grid[row][col].piece = new Piece(this.currentPlayer, row, col); 
     
         // Update the currentPlayer's piece position
         this.currentPlayer.updatePiecePosition(row, col);
@@ -854,34 +883,34 @@ export class Game {
         const placedTile = this.board.grid[row][col];
      
         // Assuming the tile has a property 'destination' that can be 'moon', 'sun', 'galaxy', 'mountain', etc.
-        if (placedTile.destination && placedTile.destination.type === currentDestination) {
+        if (placedTile.destination && placedTile.destination.type === currentDestination && this.updateUIflag) {
             console.log(`Destination ${currentDestination} reached. Move to the next destination.`);
             this.currentPlayer.advanceToNextDestination();
             this.revealNextDestination();
         }
-        // Note: Depending on your game's rules, you might want to add more checks,
         // for instance, to ensure the move is valid (e.g., within bounds, not jumping over obstacles).
     
         // Update the UI to reflect the new board state
         // Assuming this is inside a method after moving the piece
         if (this.currentPlayer.getCurrentDestination() === "return" && this.currentPlayer.hasReturnedToInitialPosition()) {
             this.gameOver = true;
+            console.log(this.gameState);
             // Update the UI immediately before showing the alert
             if (this.updateUIflag) {
                 this.updateUI(); // Make sure this actually updates the UI as needed
                 // Use setTimeout to delay the alert until after the UI has had a chance to update
                 setTimeout(() => {
                     alert(`Player ${this.currentPlayer.name} wins!`);
-                }, 100); // Adjust the delay as needed, 100ms is usually enough
+                }, 100); // 
             }
             // other game-ending logic...
         } else {
-            this.nextRound = true;
             this.selectedPiece = null;
+            this.nextRound = true;
         }
-        
 
-        this.switchTurn();
+
+        return this;
     }
 
         // logic for pattern connectivity
@@ -1124,24 +1153,28 @@ export class Game {
             if(this.findValidMovesFromCurrentPiecePosition().length == 0){
                 this.pieceClickable = false;
                 this.nextRound = true;
-                this.switchTurn()
+             
+                // console.log(this.gameState);
     
             } else{
+                this.gameState = this.logCurrentState(); // Log initial state
+                // console.log(this.gameState);
                 this.pieceClickable = true;
                 setTimeout(() => {
                     const pieceElement = this.findPlayerPieceElement(this.currentPlayer);
                     if (pieceElement) {
                         pieceElement.click();
                     }
-                }, 500); // Delay of 500 milliseconds
+                }, 300); // Delay of 500 milliseconds
             }
                 // this.makePieceClickablex();
             }
+            return this;
         }
 
         findPlayerPieceElement(player) {
             // Assuming each player's piece has a unique color or identifier that can be used to find it
-            const pieceColor = player.colour; // Adjust based on your game's logic
+            const pieceColor = player.colour; // Adjust based on  game's logic
             const pieces = document.querySelectorAll('.piece');
             for (const piece of pieces) {
                 if (piece.style.backgroundColor === pieceColor) {
@@ -1150,6 +1183,201 @@ export class Game {
             }
             return null; // No piece found for the player
         }
+
+        logCurrentState() {
+            const patternAbbr = {
+                'horizontal': 'H',
+                'vertical': 'V',
+                'L-up-right': 'LUR',
+                'L-up-left': 'LUL',
+                'L-down-right': 'LDR',
+                'L-down-left': 'LDL',
+                'T-up': 'TU',
+                'T-down': 'TD',
+                'T-right': 'TR',
+                'T-left': 'TL'
+            };
+        
+            const destinationAbbr = {
+                'moon': 'M',
+                'sun': 'S',
+                'galaxy': 'G',
+                'mountain': 'T'
+            };
+        
+            const playerPieceAbbr = {
+                'red': 'R',
+                'blue': 'B' 
+            };
+        
+            let formattedGrid = this.board.grid.map(row =>
+                row.map(tile => {
+                    let elements = [patternAbbr[tile.pattern] || "??"]; // Use "??" as a fallback if the pattern is unknown
+        
+                    if (tile.destination) {
+                        elements.push(destinationAbbr[tile.destination.type] || "?"); // Use "?" as a fallback if the destination is unknown
+                    }
+        
+                    if (tile.piece) {
+                        elements.push(playerPieceAbbr[tile.piece.player.colour] || "?"); // Use "?" as a fallback if the player color is unknown
+                    }
+        
+                    // Join the elements with dashes and handle missing pieces or destinations gracefully
+                    return elements.join("-");
+                })
+            );
+        
+            const currentPlayerSpareTile = this.currentPlayer.spareTile ? patternAbbr[this.currentPlayer.spareTile.pattern] || "null" : "null";
+            const opponent = this.getOtherPlayer();
+            const opponentSpareTile = opponent.spareTile ? patternAbbr[opponent.spareTile.pattern] || "null" : "null";
+        
+            const currentPlayerAbbr = this.currentPlayer === this.players[0] ? 'R' : 'B'; //give opponent as currentplayer to pass for ai
+        
+            const piecePosition = this.currentPlayer.getPiecePosition();
+            const piecePositionStr = {row: piecePosition.row, col: piecePosition.col}
+        
+            // Collect valid spare tile placements
+            let validSpareTilePlacements = [];
+            for (let row = 0; row < this.board.grid.length; row++) {
+                for (let col = 0; col < this.board.grid[row].length; col++) {
+                    if (this.canPlaceSpareTile(row, col)) {
+                        validSpareTilePlacements.push({row, col});
+                    }
+                }
+            }
+
+            let validPiecePlacements = this.findValidMovesFromCurrentPiecePosition();
+            let gameOver = false;
+            // Extend to include destinations in abbreviation
+            const currentPlayerDestinationsAbbr = this.currentPlayer.destinations.map(dest => destinationAbbr[dest] || "?");
+            const opponentDestinationsAbbr = opponent.destinations.map(dest => destinationAbbr[dest] || "?");
+            const currentPlayerCurrentDestinationAbbr = destinationAbbr[this.currentPlayer.getCurrentDestination()] || "initial";
+            const opponentCurrentDestinationAbbr = destinationAbbr[opponent.getCurrentDestination()] || "?";
+                        
+
+            return { 
+                grid: formattedGrid, 
+                currentPlayer: currentPlayerAbbr,
+                currentPlayerSpareTile: currentPlayerSpareTile,
+                opponentSpareTile: opponentSpareTile,
+                piecePosition: piecePositionStr,
+                lastClickedRow: this.lastClickedRow,
+                lastClickedCol: this.lastClickedCol,
+                validSpareTilePlacements: validSpareTilePlacements,
+                validPiecePlacements: validPiecePlacements,
+                gameOver: gameOver,
+                currentPlayerDestinations: currentPlayerDestinationsAbbr,
+                opponentDestinations: opponentDestinationsAbbr,
+                currentPlayerCurrentDestination: currentPlayerCurrentDestinationAbbr,
+                opponentCurrentDestination: opponentCurrentDestinationAbbr,
+                currentPlayerCurrentDestinationIndex: this.currentPlayer.currentDestinationIndex,
+                opponentCurrentDestinationIndex: opponent.currentDestinationIndex
+            };
+        }
+        
+        logCurrentStateForPiecePlacement() {
+            const patternAbbr = {
+                'horizontal': 'H',
+                'vertical': 'V',
+                'L-up-right': 'LUR',
+                'L-up-left': 'LUL',
+                'L-down-right': 'LDR',
+                'L-down-left': 'LDL',
+                'T-up': 'TU',
+                'T-down': 'TD',
+                'T-right': 'TR',
+                'T-left': 'TL'
+            };
+        
+            const destinationAbbr = {
+                'moon': 'M',
+                'sun': 'S',
+                'galaxy': 'G',
+                'mountain': 'T'
+            };
+        
+            const playerPieceAbbr = {
+                'red': 'R',
+                'blue': 'B' 
+            };
+        
+            let formattedGrid = this.board.grid.map(row =>
+                row.map(tile => {
+                    let elements = [patternAbbr[tile.pattern] || "??"]; // Use "??" as a fallback if the pattern is unknown
+        
+                    if (tile.destination) {
+                        elements.push(destinationAbbr[tile.destination.type] || "?"); // Use "?" as a fallback if the destination is unknown
+                    }
+        
+                    if (tile.piece) {
+                        elements.push(playerPieceAbbr[tile.piece.player.colour] || "?"); // Use "?" as a fallback if the player color is unknown
+                    }
+        
+                    // Join the elements with dashes and handle missing pieces or destinations gracefully
+                    return elements.join("-");
+                })
+            );
+        
+            //switch turn here for ai pov, but logically it is still player's move
+            const opponent = this.getOtherPlayer();
+            const currentPlayer = this.currentPlayer
+            const currentPlayerSpareTile = currentPlayer.spareTile ? patternAbbr[currentPlayer.spareTile.pattern] || null: null; //ai
+            const opponentSpareTile = opponent.spareTile ? patternAbbr[opponent.spareTile.pattern] || null : null; //player
+        
+            const currentPlayerAbbr = this.currentPlayer === this.players[0] ? 'R' : 'B'; //give opponent as currentplayer to pass for ai
+        
+            const piecePosition = currentPlayer.getPiecePosition();
+            const piecePositionStr = {row: piecePosition.row, col: piecePosition.col}
+        
+            // Collect valid spare tile placements
+            let validSpareTilePlacements = [];
+            for (let row = 0; row < this.board.grid.length; row++) {
+                for (let col = 0; col < this.board.grid[row].length; col++) {
+                    if (this.canPlaceSpareTile(row, col)) {
+                        validSpareTilePlacements.push({row, col});
+                    }
+                }
+            }
+            let validPiecePlacements = null;
+            let gameOver = false;
+
+                // Extend to include destinations in abbreviation
+            const currentPlayerDestinationsAbbr = currentPlayer.destinations.map(dest => destinationAbbr[dest] || "?");
+            const opponentDestinationsAbbr = opponent.destinations.map(dest => destinationAbbr[dest] || "?");
+            const currentPlayerCurrentDestinationAbbr = destinationAbbr[currentPlayer.getCurrentDestination()] || "return";
+            const opponentCurrentDestinationAbbr = destinationAbbr[opponent.getCurrentDestination()] || "return";
+            let tempCurrentDestination, tempCurrentDestinationIndex ;
+
+
+
+            return { 
+                grid: formattedGrid, 
+                currentPlayer: currentPlayerAbbr,
+                currentPlayerSpareTile: currentPlayerSpareTile,
+                opponentSpareTile: opponentSpareTile,
+                piecePosition: piecePositionStr,
+                lastClickedRow: this.lastClickedRow,
+                lastClickedCol: this.lastClickedCol,
+                validSpareTilePlacements: validSpareTilePlacements,
+                validPiecePlacements: validPiecePlacements,
+                gameOver: gameOver,
+                currentPlayerDestinations: currentPlayerDestinationsAbbr,
+                opponentDestinations: opponentDestinationsAbbr,
+                currentPlayerCurrentDestination: currentPlayerCurrentDestinationAbbr,
+                opponentCurrentDestination: opponentCurrentDestinationAbbr,
+                currentPlayerCurrentDestinationIndex: currentPlayer.currentDestinationIndex,
+                opponentCurrentDestinationIndex: opponent.currentDestinationIndex,
+                tempCurrentPlayerCurrentDestination : currentPlayerCurrentDestinationAbbr,
+                tempCurrentPlayerCurrentDestinationIndex : currentPlayer.currentDestinationIndex,
+                tempOpponentCurrentDestination : opponentCurrentDestinationAbbr,
+                tempOpponentCurrentDestinationIndex : opponent.currentDestinationIndex,
+
+            };
+        }
+                
+                
+        
+        
         
 }
 
