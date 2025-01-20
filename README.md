@@ -1,6 +1,7 @@
 # Project: Game : JungleMaze
 
-This project can be run live on the link :
+![ss](screenshot.png)
+This project can be run live on the link : https://jungle-maze.static.domains
 
 Otherwise:
 Run this repository on a localhost.
