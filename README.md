@@ -5,7 +5,7 @@ This project can be run live on the link :
 Otherwise:
 Run this repository on a localhost.
 
-##Game introduction:
+## Game introduction:
 
 There are three versions:
 1. Player vs Player
@@ -18,7 +18,7 @@ There are three versions:
 For 2 and 3, user must choose the AITYPE; whether to use Minimax, Minimax with AB Pruning, Transosition table AB pruning or Minimax Iterative Deepening
     - For All minimax functions, user have to choose the depth up to depth 3.
 
-##Gameplay :
+## Gameplay :
 
 Players have to compete to achieve all destinations before the other player. At the start of the game, board of 7x7 cells will be initialised with random pattern. the four destinations are on the board. 
 
@@ -28,7 +28,7 @@ Once a player has reached all four destinations, the player has to return to the
 
 The game is a battle between aiming to form path to complete the destinations before the opponent while aiming to block the opponent pathway.
 
-##How to play?
+## How to play?
 
 1. Place Spare tile:
 
